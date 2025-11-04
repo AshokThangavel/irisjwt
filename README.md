@@ -51,3 +51,7 @@ Set token = ##class(irisjwt.JWT).Encode(payloadDAObject, secret, algorithm, head
 Set payload =  ##class(irisjwt.JWT).Encode(token, secret, algorithm) ; retuns %DynamicObject
 Set supportedAlog =  ##class(irisjwt.JWT).SupportedAlgorithms() ; returns supported alogrithms
 ```
+The `Encode` and `Decode` methods return the JWT string or decoded payload on success.  If an error occurs, they return an empty string (`""`).  
+You can check the following variables for details:
+- `%jwterror` → Contains the exact error message.  
+- `%objlasterror` → Contains detailed error information for debugging.

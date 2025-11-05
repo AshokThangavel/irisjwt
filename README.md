@@ -55,3 +55,6 @@ The `Encode` and `Decode` methods return the JWT string or decoded payload on su
 You can check the following variables for details:
 - `%jwterror` → Contains the exact error message.  
 - `%objlasterror` → Contains detailed error information for debugging.
+
+## Contrbution
+👉 Check out our [Contributing Guidelines](./CONTRIBUTING.md) for more details.

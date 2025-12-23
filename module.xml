@@ -3,8 +3,9 @@
   <Document name="irisjwt.ZPM">
     <Module>
       <Name>irisjwt</Name>
+      <ExternalName>irisJWT</ExternalName>
       <Version>1.0.0</Version>
-      <Description>irisjwt</Description>
+      <Description>Generate JSON Web Tokens natively in InterSystems IRIS.</Description>
       <Keywords>Terminal, COS</Keywords>
       <Packaging>module</Packaging>
       <Resource Name="irisjwt.PKG"/>

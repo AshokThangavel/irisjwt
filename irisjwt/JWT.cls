@@ -2,13 +2,13 @@ Class irisjwt.JWT Extends %RegisteredObject
 {
 
 /// Generate Symmetric signed JWT
-ClassMethod Encode(payload As %DynamicObject = {{}}, secret As %String = "secret", algorithm As %String = "HS256", jwtHeader As %DynamicObject = {{}}) As %String
+ClassMethod Encode(pPayload As %DynamicObject = {{}}, pSecret As %String = "", pAlgorithm As %String = "HS256", pJWTHeader As %DynamicObject = {{}}) As %String
 {
 	Try{
-		Do ..BuildHeader(algorithm,jwtHeader)
-		If '$IsObject(payload)&&(payload'="") Set payload= {}.%FromJSON(payload)
-	    Do ..CreateJWKS(algorithm, secret,.jwks)
-	    $$$ThrowOnError(##Class(%Net.JSON.JWT).Create(jwtHeader, , payload, $Get(jwks), , .JWT))
+		Do ..BuildHeader(pAlgorithm,pJWTHeader)
+		If '$IsObject(pPayload)&&(pPayload'="") Set pPayload= {}.%FromJSON(pPayload)
+	    Do ..CreateJWKS(pAlgorithm, pSecret,.jwks)
+	    $$$ThrowOnError(##Class(%Net.JSON.JWT).Create(pJWTHeader, , pPayload, $Get(jwks), , .JWT))
 	}
 	Catch ex {
 		Set %jwterror = $SYSTEM.Status.GetErrorText(ex.AsStatus())
@@ -18,11 +18,11 @@ ClassMethod Encode(payload As %DynamicObject = {{}}, secret As %String = "secret
 }
 
 /// Generate the payload from JWT token
-ClassMethod Decode(token As %String = "", secret As %String = "", algorithm As %String = "HS256") As %DynamicObject
+ClassMethod Decode(pToken As %String = "", pSecret As %String = "", pAlgorithm As %String = "HS256") As %DynamicObject
 {
 	Try {
-		Do ..CreateJWKS(algorithm, secret,.jwks)
-		$$$ThrowOnError(##Class(%Net.JSON.JWT).Validate(token, jwks, ,,.claims,.op))
+		Do ..CreateJWKS(pAlgorithm, pSecret,.jwks)
+		$$$ThrowOnError(##Class(%Net.JSON.JWT).Validate(pToken, jwks, ,,.claims,.op))
 	}
 	Catch ex {
 		Set %jwterror = $SYSTEM.Status.GetErrorText(ex.AsStatus())
@@ -40,35 +40,35 @@ ClassMethod SupportedAlgorithms() As %DynamicObject [ CodeMode = expression ]
 }
 }
 
-ClassMethod BuildHeader(algorithm As %String = "HS256", jwtHeader)
+ClassMethod BuildHeader(pAlgorithm As %String = "HS256", jwtHeader)
 {
 	If '$IsObject(jwtHeader) {
-		Set jwtHeader = {"alg": (algorithm), "typ": "JWT"}
+		Set jwtHeader = {"alg": (pAlgorithm), "typ": "JWT"}
 	}
 	Else {
-		Set:'jwtHeader.%IsDefined("alg") jwtHeader.alg=algorithm
+		Set:'jwtHeader.%IsDefined("alg") jwtHeader.alg=pAlgorithm
 		Set:'jwtHeader.%IsDefined("typ") jwtHeader.typ="JWT"
 	}
 }
 
-ClassMethod ListToDA(List As %List) As %DynamicArray [ Internal, Private ]
+ClassMethod ListToDA(pList As %List) As %DynamicArray [ Internal, Private ]
 {
     Set DA = []
     Set ptr = 0
-    While $listNext(List,ptr,val) {
+    While $listNext(pList,ptr,val) {
 		Do DA.%Push(val)
 	}
     Return DA
 }
 
-ClassMethod CreateJWK(algorithm As %String, secret As %String, Output privateJWK As %Net.JSON.JWK, Output publicJWK As %Net.JSON.JWK) [ Internal, Private ]
+ClassMethod CreateJWK(pAlgorithm As %String, pSecret As %String, Output privateJWK As %Net.JSON.JWK, Output publicJWK As %Net.JSON.JWK) [ Internal, Private,CodeMode = expression]
 {
-    Return ##Class(%Net.JSON.JWK).Create(algorithm, secret, .privateJWK, .publicJWK)
+##Class(%Net.JSON.JWK).Create(pAlgorithm, pSecret, .privateJWK, .publicJWK)
 }
 
-ClassMethod CreateJWKS(algorithm As %String, secret As %String, JWKS) [ Internal, Private ]
+ClassMethod CreateJWKS(pAlgorithm As %String, pSecret As %String, JWKS) [ Internal, Private ]
 {
-   $$$ThrowOnError(..CreateJWK(algorithm, secret, .privateJWK, .publicJWK))
+   $$$ThrowOnError(..CreateJWK(pAlgorithm, pSecret, .privateJWK, .publicJWK))
    $$$ThrowOnError(##class(%Net.JSON.JWKS).PutJWK(privateJWK,.JWKS))
 }
 
